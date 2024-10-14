@@ -66,6 +66,16 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
+        try {
+            $customer->delete(); 
+            return response()->json([
+                'message' => 'Customer deleted successfully!'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Something went wrong!',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
