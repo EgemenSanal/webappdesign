@@ -34,6 +34,7 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
+
         return new CustomerResource(Customer::create($request->all()));
     }
 
@@ -67,7 +68,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         try {
-            $customer->delete(); 
+            $customer->delete();
             return response()->json([
                 'message' => 'Customer deleted successfully!'
             ], 200);

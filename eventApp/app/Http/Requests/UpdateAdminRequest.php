@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateCustomerRequest extends FormRequest
+class UpdateAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,13 +26,13 @@ class UpdateCustomerRequest extends FormRequest
             return [
                 'name' => ['required'],
                 'email' => ['required','email'],
-                'type' => ['required',Rule::in(['S','B'])]
+                'password' => ['required'],
             ];
         }else{
             return [
                 'name' => ['sometimes','required'],
                 'email' => ['sometimes','required','email'],
-                'type' => ['sometimes','required',Rule::in(['S','B'])]
+                'password' => ['sometimes','required'],
             ];
         }
 

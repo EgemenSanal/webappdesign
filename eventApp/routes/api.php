@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use Illuminate\Http\Request;
@@ -11,3 +12,5 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('customers', CustomerController::class);
 Route::apiResource('invoices', InvoiceController::class);
+Route::apiResource('admins', AdminController::class);
+//Routte::put('members', [Member::class, 'update']);
