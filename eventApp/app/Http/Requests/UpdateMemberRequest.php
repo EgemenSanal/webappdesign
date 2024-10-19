@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-
-class UpdateInvoiceRequest extends FormRequest
+class UpdateMemberRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,17 +24,18 @@ class UpdateInvoiceRequest extends FormRequest
         $method  = $this->method();
         if($method == 'PUT'){
             return [
-                'status' => ['required',Rule::in(['B','P','V'])],
-                'memberID' => ['required'],
-                'billedDate' => ['required'],
-                'paidDate' => ['sometimes','required'],
+                'name' => ['required'],
+                'email' => ['required','email'],
+                'password' => ['required'],
+                'role' => ['required']
             ];
         }else{
             return [
-                'status' => ['sometimes','required'],
-                'memberID' => ['sometimes','required',Rule::in(['B','P','V'])],
-                'billedDate' => ['sometimes','required'],
-                'paidDate' => ['sometimes','required'],
+                'name' => ['sometimes','required'],
+                'email' => ['sometimes','required','email'],
+                'password' => ['sometimes','required'],
+                'role' => ['sometimes','required']
+
             ];
         }
     }

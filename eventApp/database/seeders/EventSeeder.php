@@ -2,18 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Invoice;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Event;
 
-class InvoiceSeeder extends Seeder
+
+
+class EventSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Invoice::factory()->count(25)->create();
-
+        Event::factory()->count(25)->create();
     }
 }
