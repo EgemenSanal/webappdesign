@@ -19,4 +19,13 @@ class Member extends Model
         'role'
     ];
 
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_member');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

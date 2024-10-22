@@ -21,7 +21,8 @@ class Event extends Model
         'status',
     ];
 
-    public function customers(){
-        return $this->belongsToMany(Member::class);
+    public function members()
+    {
+        return $this->belongsToMany(Member::class, 'event_member');
     }
 }
