@@ -22,6 +22,7 @@ class InvoiceFactory extends Factory
         $memberID = $this->faker->numberBetween(1,25);
         return [
             'memberID' => Member::factory(),
+            
             'status' => $status,
             'billedDate' => $this->faker->dateTime(),
             'paidDate' => $status === 'P' ? $this->faker->dateTime() : null,
