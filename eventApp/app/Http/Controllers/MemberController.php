@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginFromRequest;
+use App\Http\Requests\UserStore;
 use App\Http\Resources\MemberResource;
 use App\Http\Resources\MemberCollection;
 use App\Models\Member;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
+use http\Client\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class MemberController extends Controller
 {
@@ -17,10 +23,41 @@ class MemberController extends Controller
      */
     public function index()
     {
-        return new MemberCollection(Member::all());
+        $user = auth()->user();
+        return response()->json([
+            'message' => 'success',
+            'auth' => $user
+        ]);
+       //return new MemberCollection(Member::all());
+    }
+
+    public function login(LoginFromRequest $request){
+
+        $request->validated();
+        $credentials = request(['email', 'password']);
+        if(!Auth::attempt($credentials)){
+            return response()->json([
+               'message' => 'Unauthorized'
+            ],401);
+        }
+        $user = $request->user();
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->token;
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type' => 'Bearer',
+
+        ]);
 
     }
 
+    public function logout(\Illuminate\Http\Request $request){
+        $token = $request->user()->token();
+        $token->revoke();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -32,22 +69,44 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMemberRequest $request)
+    public function store(UserStore $request)
     {
-        $data = $request->all();
+
+        $request->validated();
+        $user = Member::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+            'role' => $request['role'],
+        ]);
+        if($user){
+            return response()->json([
+                'message' => 'Successfully created user!',
+                'user' => $user
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'Fail created user!'
+            ]);
+        }
+
+
+
+        /* $data = $request->all();
         $data['password'] = Hash::make($request->password);
         $member = Member::create($data);
-        return new MemberResource($member);
+        return new MemberResource($member); */
 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Member $member)
+    public function show(\Illuminate\Http\Request $request)
     {
-        return new MemberResource($member);
+
     }
+
 
     /**
      * Show the form for editing the specified resource.
