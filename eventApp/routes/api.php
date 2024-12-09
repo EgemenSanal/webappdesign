@@ -15,16 +15,22 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 // Route::apiResource('customers', CustomerController::class);
-Route::apiResource('invoices', InvoiceController::class);
+//Route::apiResource('invoices', InvoiceController::class);
 // Route::apiResource('admins', AdminController::class);
 //Route::apiResource('members', MemberController::class);
-Route::apiResource('events', EventController::class);
+//Route::apiResource('events', EventController::class);
 
 Route::controller(MemberController::class)->group(function () {
    Route::post('/register', 'store');
    Route::post('/login', 'login');
    Route::get('/auth-user', 'index')->middleware('auth:api');
    Route::post('logout', 'logout')->middleware('auth:api');
+});
+Route::controller(EventController::class)->group(function () {
+    Route::get('/events', 'index')->middleware('auth:api');
+});
+Route::controller(InvoiceController::class)->group(function () {
+    Route::get('/invoices', 'index')->middleware('auth:api');
 });
 
 

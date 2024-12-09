@@ -23,7 +23,6 @@ class Member extends Authenticatable
     ];
 
 
-
     public function events()
     {
         return $this->belongsToMany(Event::class, 'event_member');

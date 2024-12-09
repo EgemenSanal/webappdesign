@@ -13,6 +13,7 @@ use App\Http\Requests\UpdateMemberRequest;
 use http\Client\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -24,9 +25,16 @@ class MemberController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $userId = auth()->id();
+
+        $member = DB::table('members')->where('id', $userId)->first();
+        if ($member->role === 'A') {
+            return new MemberCollection(Member::all());
+        }
+
         return response()->json([
             'message' => 'success',
-            'auth' => $user
+            'data' => $user
         ]);
        //return new MemberCollection(Member::all());
     }

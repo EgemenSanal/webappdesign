@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Event extends Model
+class Event extends Authenticatable
 {
 
-    use HasFactory;
+    use HasFactory,HasApiTokens,Notifiable;
 
     protected $fillable = [
         'name',
@@ -23,6 +26,6 @@ class Event extends Model
 
     public function members()
     {
-        return $this->belongsToMany(Member::class, 'event_member');
+        return $this->belongsToMany(Member::class, 'members');
     }
 }

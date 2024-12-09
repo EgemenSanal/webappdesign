@@ -8,6 +8,7 @@ use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\InvoiceCollection;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -16,7 +17,32 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        return new InvoiceCollection(Invoice::all());
+
+        $user = auth()->user();
+        $userid = auth()->id();
+
+        $member = DB::table('invoices')->where('memberID', $userid)->first();
+        $isAdmin = DB::table('members')->where('id', $userid)->first();
+        if ($isAdmin->role === 'A') {
+            return new InvoiceCollection(Invoice::all());
+        }
+        if (!$member) {
+            return response()->json([
+                'message' => 'No events found for the user',
+                'data' => []
+            ], 404);
+        }
+        if ($member->memberID == $userid) {
+            return new InvoiceResource($member);
+        }
+
+
+        return response()->json([
+            'message' => 'INVOICES',
+            'data' => $user
+        ]);
+
+        //return new InvoiceCollection(Invoice::all());
     }
 
     /**

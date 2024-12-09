@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MemberCollection;
 use App\Models\Event;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\EventCollection;
+use App\Models\Member;
+use Illuminate\Support\Facades\DB;
 
 
 class EventController extends Controller
@@ -15,9 +18,36 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Event $event)
     {
-        return new EventCollection(Event::all());
+
+        $user = auth()->user();
+        $userid = auth()->id();
+
+        $member = DB::table('events')->where('organizer_id', $userid)->first();
+        $isAdmin = DB::table('members')->where('id', $userid)->first();
+        if ($isAdmin->role === 'A') {
+            return new EventCollection(Event::all());
+        }
+        if (!$member) {
+            return response()->json([
+                'message' => 'No events found for the user',
+                'data' => $member
+            ], 404);
+        }
+        if ($member->organizer_id == $userid) {
+            return new EventResource($member);
+        }
+
+
+        return response()->json([
+            'message' => 'EVENTS',
+            'data' => $user
+        ]);
+
+        //return new EventResource(Event::all());
+
+        //return new EventCollection(Event::all());
     }
 
     /**
