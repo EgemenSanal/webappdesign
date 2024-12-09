@@ -110,8 +110,20 @@ class MemberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(\Illuminate\Http\Request $request)
+    public function show($id)
     {
+        $user = auth()->user();
+        $userId = auth()->id();
+        $isAdmin = DB::table('members')->where('id', $userId)->first();
+        $member = DB::table('members')->where('id', $id)->first();
+        if($isAdmin->role === 'A'){
+            return response()->json(['member' => $member], 200);
+
+        }else{
+            return response()->json([
+                'message' => 'You are not allowed to view this member!',
+            ]);
+        }
 
     }
 
@@ -129,16 +141,33 @@ class MemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, Member $member)
     {
-        $data = $request->all();
+        $user = Auth::user();
+        $userid = Auth::id();
 
-        //hash if password updated
+        $request->validated();
+        $data = $request->all();
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
+        //hash if password updated
+        $isAdmin = DB::table('members')->where('id', $userid)->first();
+        $memberID = $isAdmin->id;
+        if (!$memberID) {
+            return response()->json(['message' => 'Member not found'], 404);
+        }
+        if ($isAdmin->role === 'A') {
+            $member->update($data);
+            return response()->json(['message' => 'Member updated successfully']);
+        }
+        if($isAdmin->id == $memberID){
+            $member->update($data);
+            return response()->json(['message' => 'Member updated successfully!']);
+        }
 
-        $member->update($data);
 
-        return response()->json(['message' => 'Member updated successfully']);
+        //$member->update($data);
+
+
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEvent;
 use App\Http\Resources\MemberCollection;
 use App\Models\Event;
 use App\Http\Controllers\Controller;
@@ -11,6 +12,7 @@ use App\Http\Resources\EventResource;
 use App\Http\Resources\EventCollection;
 use App\Models\Member;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 
 class EventController extends Controller
@@ -61,9 +63,36 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEventRequest $request)
+    public function store(StoreEvent $request)
     {
-        return new EventResource(Event::create($request->all()));
+        $user = auth()->user();
+        $userid = auth()->id();
+
+        $member = DB::table('members')->where('id', $userid)->first();
+        $memberID = $member->id;
+        $request->validated();
+        $createdEvent = Event::create([
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'location' => $request['location'],
+            'starting_date' => $request['starting_date'],
+            'ending_date' => $request['ending_date'],
+            'organizer_id' => $memberID,
+            'capacity' => $request['capacity'],
+            'status' => $request['status'],
+
+
+        ]);
+        if($user){
+            return response()->json([
+                'message' => 'Successfully created event!',
+                'user' => $createdEvent
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'Fail created event!'
+            ]);
+        }
     }
 
     /**

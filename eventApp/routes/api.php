@@ -23,11 +23,18 @@ Route::get('/user', function (Request $request) {
 Route::controller(MemberController::class)->group(function () {
    Route::post('/register', 'store');
    Route::post('/login', 'login');
-   Route::get('/auth-user', 'index')->middleware('auth:api');
+   Route::get('/user', 'index')->middleware('auth:api');
+   Route::get('user/{id}', [MemberController::class, 'show'])->middleware('auth:api');
+
    Route::post('logout', 'logout')->middleware('auth:api');
+   Route::put('recreate', 'update')->middleware('auth:api');
+   Route::put('recreate/{id}', 'update')->middleware('auth:api');
+   Route::patch('recreate', 'update')->middleware('auth:api');
+
 });
 Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->middleware('auth:api');
+    Route::post('/createEvent', 'store')->middleware('auth:api');
 });
 Route::controller(InvoiceController::class)->group(function () {
     Route::get('/invoices', 'index')->middleware('auth:api');
