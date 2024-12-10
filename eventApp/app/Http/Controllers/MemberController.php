@@ -141,16 +141,10 @@ class MemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, Member $member)
     {
-        $user = Auth::user();
         $userid = Auth::id();
-
-
-        $data = $request->all();
-
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
-        //hash if password updated
         $isAdmin = DB::table('members')->where('id', $userid)->first();
         $memberID = $isAdmin->id;
         if (!$memberID) {
@@ -162,12 +156,7 @@ class MemberController extends Controller
         }else{
             return response()->json(['message' => 'You are not allowed to edit this user!'], 404);
         }
-
-
-
         //$member->update($data);
-
-
     }
 
     /**

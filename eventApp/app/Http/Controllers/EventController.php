@@ -10,10 +10,8 @@ use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\EventCollection;
-use App\Models\Member;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 
 class EventController extends Controller
@@ -106,6 +104,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
+
         $user = auth()->user();
         $userId = auth()->id();
         $isAdmin = DB::table('members')->where('id', $userId)->first();
@@ -140,7 +139,7 @@ class EventController extends Controller
 
 
         $data = $request->all();
-        $event->update($request->all());
+        //$event->update($request->all());
         $isAdmin = DB::table('members')->where('id', $userid)->first();
         $memberID = $isAdmin->id;
         if ($isAdmin->role === 'A') {
