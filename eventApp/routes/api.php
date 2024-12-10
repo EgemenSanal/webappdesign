@@ -25,37 +25,27 @@ Route::controller(MemberController::class)->group(function () {
    Route::post('/login', 'login');
    Route::get('/user', 'index')->middleware('auth:api');
    Route::get('user/{id}', [MemberController::class, 'show'])->middleware('auth:api');
-
    Route::post('logout', 'logout')->middleware('auth:api');
-   Route::put('recreate', 'update')->middleware('auth:api');
-   Route::put('recreate/{id}', 'update')->middleware('auth:api');
-   Route::patch('recreate', 'update')->middleware('auth:api');
+   Route::put('user/{member}', 'update')->middleware('auth:api');
+   Route::patch('user/{member}', 'update')->middleware('auth:api');
+   Route::delete('user/{member}', 'destroy')->middleware('auth:api');
 
 });
 Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->middleware('auth:api');
+    Route::get('/events/{id}', 'show')->middleware('auth:api');
+    Route::put('/events/{event}', 'update')->middleware('auth:api');
+    Route::patch('/events/{event}', 'update')->middleware('auth:api');
     Route::post('/createEvent', 'store')->middleware('auth:api');
+    Route::delete('/events/{event}', 'destroy')->middleware('auth:api');
 });
 Route::controller(InvoiceController::class)->group(function () {
     Route::get('/invoices', 'index')->middleware('auth:api');
+    Route::post('/invoices', 'store')->middleware('auth:api');
+    Route::get('/invoices/{id}', 'show')->middleware('auth:api');
+    Route::put('/invoices/{invoice}', 'update')->middleware('auth:api');
+    Route::patch('/invoices/{invoice}', 'update')->middleware('auth:api');
+    Route::delete('/invoices/{invoice}', 'destroy')->middleware('auth:api');
 });
-
-
-
-//Route::middleware('auth:api')->get('/members', [MemberController::class, 'showInfo']);
-
-/* Route::post('login', function (Request $request) {
-    $credentials = $request->only('email', 'password');
-
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        $token = $user->createToken('Personal Access Token')->accessToken;
-
-        return response()->json(['token' => $token], 200);
-    } else {
-        return response()->json(['error' => 'Unauthorized!'], 401);
-    }
-});
-Route::middleware('auth:api')->get('/members', [MemberController::class, 'show']); */
 
 

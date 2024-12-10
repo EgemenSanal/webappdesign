@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\EventCollection;
 use App\Models\Member;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -70,6 +71,11 @@ class EventController extends Controller
 
         $member = DB::table('members')->where('id', $userid)->first();
         $memberID = $member->id;
+        if($member->role === 'M'){
+            return response()->json([
+                'message' => 'Not allowed to create an event',
+            ]);
+        }
         $request->validated();
         $createdEvent = Event::create([
             'name' => $request['name'],
@@ -98,10 +104,21 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Event $event)
+    public function show($id)
     {
-        return new EventResource($event);
+        $user = auth()->user();
+        $userId = auth()->id();
+        $isAdmin = DB::table('members')->where('id', $userId)->first();
+        $event = DB::table('events')->where('id', $id)->first();
+        if($isAdmin->role === 'A'){
+            return response()->json(['member' => $event], 200);
 
+        }else{
+            return response()->json([
+                'message' => 'You are not allowed to view this event!',
+            ]);
+        }
+        //return new EventResource($event);
     }
 
     /**
@@ -117,7 +134,21 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
+
+        $user = Auth::user();
+        $userid = Auth::id();
+
+
+        $data = $request->all();
         $event->update($request->all());
+        $isAdmin = DB::table('members')->where('id', $userid)->first();
+        $memberID = $isAdmin->id;
+        if ($isAdmin->role === 'A') {
+            $event->update($request->all());
+            return response()->json(['message' => 'Event updated successfully']);
+        }else{
+            return response()->json(['message' => 'You are not allowed to edit this event!'], 404);
+        }
 
     }
 
@@ -126,16 +157,25 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        try {
-            $event->delete();
-            return response()->json([
-                'message' => 'Event deleted successfully!'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Something went wrong!',
-                'message' => $e->getMessage()
-            ], 500);
+        $user = auth()->user();
+        $userid = auth()->id();
+        $isAdmin = DB::table('members')->where('id', $userid)->first();
+        if($isAdmin->role === 'A'){
+            try {
+                $event->delete();
+                return response()->json([
+                    'message' => 'Event deleted successfully!'
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => 'Something went wrong!',
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+        }else{
+            return response()->json(['message' => 'You are not allowed to delete this event!'], 404);
+
         }
+
     }
 }

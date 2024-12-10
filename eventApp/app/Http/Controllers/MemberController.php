@@ -144,8 +144,9 @@ class MemberController extends Controller
         $user = Auth::user();
         $userid = Auth::id();
 
-        $request->validated();
+
         $data = $request->all();
+
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -156,13 +157,12 @@ class MemberController extends Controller
             return response()->json(['message' => 'Member not found'], 404);
         }
         if ($isAdmin->role === 'A') {
-            $member->update($data);
+            $member->update($request->all());
             return response()->json(['message' => 'Member updated successfully']);
+        }else{
+            return response()->json(['message' => 'You are not allowed to edit this user!'], 404);
         }
-        if($isAdmin->id == $memberID){
-            $member->update($data);
-            return response()->json(['message' => 'Member updated successfully!']);
-        }
+
 
 
         //$member->update($data);
@@ -175,16 +175,26 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
-        try {
-            $member->delete();
-            return response()->json([
-                'message' => 'Member deleted successfully!'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Something went wrong!',
-                'message' => $e->getMessage()
-            ], 500);
+        $user = auth()->user();
+        $userid = auth()->id();
+        $isAdmin = DB::table('members')->where('id', $userid)->first();
+
+        if($isAdmin->role === 'A'){
+            try {
+                $member->delete();
+                return response()->json([
+                    'message' => 'Member deleted successfully!'
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => 'Something went wrong!',
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+        }else{
+            return response()->json(['message' => 'You are not allowed to delete this user!'], 404);
+
         }
+
     }
 }
