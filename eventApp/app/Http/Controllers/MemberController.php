@@ -30,6 +30,7 @@ class MemberController extends Controller
         $member = DB::table('members')->where('id', $userId)->first();
         if ($member->role === 'A') {
             return new MemberCollection(Member::all());
+
         }
 
         return response()->json([
@@ -122,7 +123,7 @@ class MemberController extends Controller
         }else{
             return response()->json([
                 'message' => 'You are not allowed to view this member!',
-            ]);
+            ],403);
         }
 
     }
@@ -142,6 +143,7 @@ class MemberController extends Controller
     public function update(UpdateMemberRequest $request, Member $member)
     {
         $userid = Auth::id();
+        $data = $request->all();
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -151,7 +153,7 @@ class MemberController extends Controller
             return response()->json(['message' => 'Member not found'], 404);
         }
         if ($isAdmin->role === 'A') {
-            $member->update($request->all());
+            $member->update($data);
             return response()->json(['message' => 'Member updated successfully']);
         }else{
             return response()->json(['message' => 'You are not allowed to edit this user!'], 404);
