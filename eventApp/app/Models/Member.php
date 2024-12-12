@@ -18,8 +18,11 @@ class Member extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'password'
+    ];
+    protected $hidden = [
         'password',
-        'role'
+        'remember_token',
     ];
 
 

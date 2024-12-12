@@ -21,7 +21,7 @@ Route::get('/user', function (Request $request) {
 //Route::apiResource('events', EventController::class);
 
 Route::controller(MemberController::class)->group(function () {
-   Route::post('/register', 'store');
+   Route::post('/register', 'register');
    Route::post('/login', 'login');
    Route::get('/user', 'index')->middleware('auth:api');
    Route::get('user/{id}', [MemberController::class, 'show'])->middleware('auth:api');

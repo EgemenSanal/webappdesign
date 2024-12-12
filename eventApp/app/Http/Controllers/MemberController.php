@@ -10,11 +10,11 @@ use App\Models\Member;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
-use http\Client\Request;
+//use http\Client\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Http\Request;
 
 
 class MemberController extends Controller
@@ -42,21 +42,29 @@ class MemberController extends Controller
 
     public function login(LoginFromRequest $request){
 
-        $request->validated();
-        $credentials = request(['email', 'password']);
-        if(!Auth::attempt($credentials)){
-            return response()->json([
-               'message' => 'Unauthorized'
-            ],401);
-        }
-        $user = $request->user();
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-
+        $request->validate([
+            'email' => 'required|email|exists:members',
+            'password' => 'required'
         ]);
+
+        $user = Member::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return [
+                'errors' => [
+                    'email' => ['The provided credentials are incorrect.']
+                ]
+            ];
+            // return [
+            //     'message' => 'The provided credentials are incorrect.'
+            // ];
+        }
+        $token = $user->createToken($user->name);
+
+        return [
+            'user' => $user,
+            'token' => $token->accessToken
+        ];
 
     }
 
@@ -78,6 +86,23 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    public function register(Request $request)
+    {
+        $fields = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|',
+            'password' => 'required|confirmed'
+        ]);
+        $fields['password'] = Hash::make($fields['password']);
+        $user = Member::create($fields);
+
+        $token = $user->createToken($request->name);
+
+        return [
+            'user' => $user,
+            'token' => $token->accessToken
+        ];
+    }
     public function store(UserStore $request)
     {
 
@@ -85,8 +110,9 @@ class MemberController extends Controller
         $user = Member::create([
             'name' => $request['name'],
             'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-            'role' => $request['role'],
+            'password' => $request['password'],
+
+
         ]);
         if($user){
             return response()->json([
