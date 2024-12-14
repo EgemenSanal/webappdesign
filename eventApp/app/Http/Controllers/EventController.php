@@ -10,6 +10,7 @@ use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\EventCollection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +22,8 @@ class EventController extends Controller
      */
     public function index(Event $event)
     {
-
+        return Event::with('members')->latest()->get();
+        /*
         $user = auth()->user();
         $userid = auth()->id();
 
@@ -49,6 +51,7 @@ class EventController extends Controller
         //return new EventResource(Event::all());
 
         //return new EventCollection(Event::all());
+        */
     }
 
     /**
@@ -62,49 +65,51 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEvent $request)
+    public function store(Request $request)
     {
-        $user = auth()->user();
-        $userid = auth()->id();
 
-        $member = DB::table('members')->where('id', $userid)->first();
-        $memberID = $member->id;
-        if($member->role === 'M'){
-            return response()->json([
-                'message' => 'Not allowed to create an event',
-            ]);
-        }
-        $request->validated();
-        $createdEvent = Event::create([
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'location' => $request['location'],
-            'starting_date' => $request['starting_date'],
-            'ending_date' => $request['ending_date'],
-            'organizer_id' => $memberID,
-            'capacity' => $request['capacity'],
-            'status' => $request['status'],
-
-
+        $fields = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required',
+            'location' => 'required',
+            'starting_date' => 'required|date',
+            'organizer_id' => 'required',
         ]);
-        if($user){
-            return response()->json([
-                'message' => 'Successfully created event!',
-                'user' => $createdEvent
-            ]);
-        }else{
-            return response()->json([
-                'message' => 'Fail created event!'
-            ]);
-        }
+        $event = Event::create([
+            'name' => $fields['name'],
+            'description' => $fields['description'],
+            'location' => $fields['location'],
+            'starting_date' => $fields['starting_date'],
+            'organizer_id' => $fields['organizer_id'],
+        ]);
+
+         //$event = Event::create($fields);
+        //$event = $request->user()->events()->create($fields);
+
+        return ['event' => $event, 'user' => $event->user];
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function showevent($id)
     {
+        $event = Event::find($id);
 
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+        $organizer_id = $event->organizer_id;
+        return [
+            response()->json($event),
+            'organizer_id' => $organizer_id,
+
+        ];
+    }
+    public function show(Event $event)
+    {
+        return Event::with('user')->latest()->get();
+    /*
         $user = auth()->user();
         $userId = auth()->id();
         $isAdmin = DB::table('members')->where('id', $userId)->first();
@@ -117,7 +122,7 @@ class EventController extends Controller
                 'message' => 'You are not allowed to view this event!',
             ]);
         }
-        //return new EventResource($event);
+        //return new EventResource($event); */
     }
 
     /**

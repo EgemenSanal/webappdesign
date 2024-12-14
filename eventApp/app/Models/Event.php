@@ -18,14 +18,11 @@ class Event extends Authenticatable
         'description',
         'location',
         'starting_date',
-        'ending_date',
-        'organizer_id',
-        'capacity',
-        'status',
+        'organizer_id'
     ];
 
     public function members()
     {
-        return $this->belongsToMany(Member::class, 'members');
+        return $this->belongsTo(Member::class);
     }
 }

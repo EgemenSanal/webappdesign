@@ -6,6 +6,8 @@ import Login from './pages/auth/login'
 import Register from './pages/auth/register'
 import { useContext } from 'react'
 import { AppContext } from './Context/AppContext'
+import Create from './pages/events/create'
+import Show from './pages/events/Show'
 
 export default function App() {
 
@@ -19,6 +21,10 @@ return <BrowserRouter>
     <Route index element= {<Home/>} />
     <Route path='/register' element={user ? <Home /> : <Register />}/>
     <Route path='/login' element={user ? <Home /> : <Login />}/>
+    <Route path='/create' element={user ? <Create /> : <Login />}/>
+    <Route path='/events/:id' element= {<Show/>} />
+
+
     
   </Route>
 </Routes>

@@ -60,9 +60,12 @@ class MemberController extends Controller
             // ];
         }
         $token = $user->createToken($user->name);
+        $userid = $user->id;
+
 
         return [
             'user' => $user,
+            'userid' => $userid,
             'token' => $token->accessToken
         ];
 
@@ -91,15 +94,17 @@ class MemberController extends Controller
         $fields = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|',
-            'password' => 'required|confirmed'
+            'password' => 'required|confirmed',
+            'role' => 'required'
         ]);
         $fields['password'] = Hash::make($fields['password']);
         $user = Member::create($fields);
 
         $token = $user->createToken($request->name);
-
+        $userid = $user->id;
         return [
             'user' => $user,
+            'userid' => $userid,
             'token' => $token->accessToken
         ];
     }

@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('name'); // name of the event
             $table->string('description'); // desc of the event
             $table->string('location'); // location of the event
-            $table->dateTime('starting_date');
-            $table->dateTime('ending_date');
+            $table->string('starting_date')->nullable();
+            $table->string('ending_date')->nullable();
             $table->integer('organizer_id'); // id of the organizer
-            $table->integer('capacity');
-            $table->string('status');
+            $table->integer('capacity')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

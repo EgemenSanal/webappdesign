@@ -11,7 +11,8 @@ export default function Register(){
         name: '',
         email: '',
         password: '',
-        password_confirmation: ''
+        password_confirmation: '',
+        role:'C'
 
     })
 
@@ -64,7 +65,7 @@ export default function Register(){
                 value={formData.password_confirmation} 
                 onChange={(e) =>setFormData({...formData,password_confirmation: e.target.value})}/>
             </div>
-            <button className="primary-btn">Register</button>
+            <button className="primary-btn bg-teal-500">Register</button>
         </form>
         
         </>

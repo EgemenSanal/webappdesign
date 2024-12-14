@@ -28,6 +28,7 @@ export default function Login(){
             setErrors(data.errors)
         } else {
             localStorage.setItem('token', data.token)
+            localStorage.setItem('userID',data.userid)
             setToken(data.token)
             //navigate("/")
         }
@@ -52,7 +53,7 @@ export default function Login(){
                 {errors.password && <p className="error">{errors.password[0]}</p>}
             </div>
             
-            <button className="primary-btn">Login</button>
+            <button className="primary-btn bg-teal-500">Login</button>
         </form>
         
         </>

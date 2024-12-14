@@ -32,11 +32,11 @@ Route::controller(MemberController::class)->group(function () {
 
 });
 Route::controller(EventController::class)->group(function () {
-    Route::get('/events', 'index')->middleware('auth:api');
-    Route::get('/events/{id}', 'show')->middleware('auth:api');
+    Route::get('/events', 'index');
+    Route::get('/events/{id}', 'showevent');
     Route::put('/events/{event}', 'update')->middleware('auth:api');
     Route::patch('/events/{event}', 'update')->middleware('auth:api');
-    Route::post('/createEvent', 'store')->middleware('auth:api');
+    Route::post('/createEvent', 'store');
     Route::delete('/events/{event}', 'destroy')->middleware('auth:api');
 });
 Route::controller(InvoiceController::class)->group(function () {
